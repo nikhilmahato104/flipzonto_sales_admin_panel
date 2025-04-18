@@ -1,0 +1,12 @@
+you have to make secure flipzonto-admin-salesman  
+  panel wher salesman visit the shop and  add the shop  
+    under four catogoray   Eastern shop ,   western shop  ,northen shop  , southern soap.   
+      first make for model ,view ,route  , server.js    in backend with ejs   and use NODE,EXPRESS,MONGODB ATLAS  . 
+      when sales-team-admin in /home or / route  first ask credential of sales team enter the ID and password   
+        or if try to hit any route without authitication it redirect to the /login route    .  and the sales-team-admin 
+           id password will save on sales_team_cre.js    there are three sales team   sonu monu bono ans password   sonu@123 
+            monu@123 bonu@123.     after login   then ask the operation   like add_soap_on_northen          . 
+                when click northene than show addshop    modifyshop   viewshop    ,  in addshop     shop image
+                 "in link string"enter shop name ,   shop contact number, shop location,   location aslo string.  
+                 and modify admin can modify and in viewshop all shop listed with delete butoon so admin can delete .  
+                 this action should perforn on real time database.omk make accrondliy maek security like production level.

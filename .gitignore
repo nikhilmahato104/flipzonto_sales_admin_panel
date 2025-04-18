@@ -1,0 +1,66 @@
+# --------------------
+# Node & Express Backend
+# --------------------
+node_modules/
+.env
+.env.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dist/
+build/
+logs/
+*.log
+
+# --------------------
+# React (Vite) Frontend
+# --------------------
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+frontend/.vite
+frontend/.DS_Store
+
+# --------------------
+# Common OS Files
+# --------------------
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+Desktop.ini
+
+# --------------------
+# IDEs & Editor Settings
+# --------------------
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# --------------------
+# Test Coverage
+# --------------------
+coverage/
+.nyc_output/
+*.lcov
+
+# --------------------
+# MongoDB
+# --------------------
+dump/
+*.mongodb
+
+# --------------------
+# Miscellaneous
+# --------------------
+*.bak
+*.tmp
+*.swp
+*.lock
+.history/
+uploads/
+public/uploads/
+*.zip
+*.tar.gz
