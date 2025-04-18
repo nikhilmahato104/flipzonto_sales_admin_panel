@@ -3,7 +3,7 @@ const router = express.Router();
 const Shop = require('../models/Shop');
 const ensureAuth = require('../middleware/authMiddleware');
 
-const regions = ['north', 'south', 'east', 'west'];
+const regions = ['north-mon','north-tue','east-wed','east-thu','south-fri', 'west-sat'];
 
 // Show all shops by region
 regions.forEach(region => {
