@@ -1,32 +1,4 @@
-you have to make secure flipzonto-admin-salesman  
-  panel wher salesman visit the shop and  add the shop  
-    under four catogoray   Eastern shop ,   western shop  ,northen shop  , southern soap.   
-      first make for model ,view ,route  , server.js    in backend with ejs   and use NODE,EXPRESS,MONGODB ATLAS  . 
-      when sales-team-admin in /home or / route  first ask credential of sales team enter the ID and password   
-        or if try to hit any route without authitication it redirect to the /login route    .  and the sales-team-admin 
-           id password will save on sales_team_cre.js    there are three sales team   sonu monu bono ans password   sonu@123 
-            monu@123 bonu@123.     after login   then ask the operation   like add_soap_on_northen          . 
-                when click northene than show addshop    modifyshop   viewshop    ,  in addshop     shop image
-                 "in link string"enter shop name ,   shop contact number, shop location,   location aslo string.  
-                 and modify admin can modify and in viewshop all shop listed with delete butoon so admin can delete .  
-                 this action should perforn on real time database.omk make accrondliy maek security like production level.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                 <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -287,114 +259,149 @@ you have to make secure flipzonto-admin-salesman
   <div id="products"></div>
 
   <script>
-  async function loadCategory(category) {
-    try {
-      localStorage.setItem("selectedCategory", category); // Store selected category
-      const container = document.getElementById('products');
-      const loader = document.getElementById('loader');
-      
-      // Show loader while fetching products
-      loader.style.display = 'block';
-      container.innerHTML = ''; // Clear previous products if any
-
-      const apiUrl = `http://localhost:3001/${category}/api`; // API call for products
-      const res = await fetch(apiUrl);
-      if (!res.ok) throw new Error('Failed to fetch products.');
-
-      const items = await res.json();
-      container.innerHTML = `<h2 style="color:#003087;">${category.charAt(0).toUpperCase() + category.slice(1)} Products</h2>`;
-      
-      items.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'product-card';
-        card.innerHTML = `
-          <img src="${item.image}" alt="${item.name}">
-          <div class="product-details">
-            <h3>${item.name}</h3>
-            <span style="color: red;">MRP ₹${item.MRP}</span><br>
-            <span style="color: green;"><strong>Rate:</strong> ₹${item.rate}</span><br>
-            <p>Total Weight: ${item.total_weight}</p>
-            ${item.available_jar > 0
-              ? `<p><strong>Available:</strong> <span style="color: green;">${item.available_jar}</span></p>`
-              : `<p style="color: red;">Out of Stock</p>`}
-            <div class="actions">
-              <input type="number" id="qty-${item._id}" min="1" max="${item.available_jar}" value="1" ${item.available_jar === 0 ? 'disabled' : ''}>
-              <button id="add-to-cart-${item._id}" onclick="addToCart('${item._id}', '${item.name}', '${item.image}', ${item.MRP}, ${item.rate}, '${category}', ${item.available_jar})" 
-                ${item.available_jar === 0 ? 'class="out-of-stock" disabled' : ''}>
-                ${item.available_jar === 0 ? 'Out of Stock' : 'Add to Cart'}
-              </button>
+    async function loadCategory(category) {
+      try {
+        localStorage.setItem("selectedCategory", category); // Store selected category
+        const container = document.getElementById('products');
+        const loader = document.getElementById('loader');
+        
+        // Show loader while fetching products
+        loader.style.display = 'block';
+        container.innerHTML = ''; // Clear previous products if any
+  
+        const apiUrl = `http://localhost:3001/${category}/api`; // API call for products
+        const res = await fetch(apiUrl);
+        if (!res.ok) throw new Error('Failed to fetch products.');
+  
+        const items = await res.json();
+        container.innerHTML = `<h2 style="color:#003087;">${category.charAt(0).toUpperCase() + category.slice(1)} Products</h2>`;
+        
+        items.forEach(item => {
+          const card = document.createElement('div');
+          card.className = 'product-card';
+          card.innerHTML = `
+            <img src="${item.image}" alt="${item.name}">
+            <div class="product-details">
+              <h3>${item.name}</h3>
+              <span style="color: red;">MRP ₹${item.MRP}</span><br>
+              <span style="color: green;"><strong>Rate:</strong> ₹${item.rate}</span><br>
+              <p>Total Weight: ${item.total_weight}</p>
+              ${item.available_jar > 0
+                ? `<p><strong>Available:</strong> <span style="color: green;">${item.available_jar}</span></p>`
+                : `<p style="color: red;">Out of Stock</p>`}
+              <div class="actions">
+                <input type="number" id="qty-${item._id}" min="1" max="${item.available_jar}" value="1" ${item.available_jar === 0 ? 'disabled' : ''}>
+                <button id="add-to-cart-${item._id}" onclick="addToCart('${item._id}', '${item.name}', '${item.image}', ${item.MRP}, ${item.rate}, '${category}', ${item.available_jar})" 
+                  ${item.available_jar === 0 ? 'class="out-of-stock" disabled' : ''}>
+                  ${item.available_jar === 0 ? 'Out of Stock' : 'Add to Cart'}
+                </button>
+              </div>
             </div>
-          </div>
-        `;
-        container.appendChild(card);
-      });
-
-      // Hide the loader once the products are loaded
-      loader.style.display = 'none';
-
-    } catch (error) {
-      console.error(error.message);
-      alert('Failed to load products.');
-      loader.style.display = 'none'; // Hide loader on error
-    }
-  }
-
-  // Load last selected category after refresh
-  document.addEventListener("DOMContentLoaded", () => {
-    const lastCategory = localStorage.getItem("selectedCategory");
-    if (lastCategory) {
-      loadCategory(lastCategory);
-    }
-  });
-
-  // Cart logic
-  async function updateStock(id, qty) {
-    try {
-        const res = await fetch(`http://localhost:3001/api/order/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ qty })
+          `;
+          container.appendChild(card);
         });
-
-        if (!res.ok) {
-            const errorText = await res.text(); // Read response as text
-            throw new Error(`Server responded with an error: ${errorText}`);
-        }
-
-        return await res.json(); // Parse JSON only if response is valid
-    } catch (error) {
-        alert(`Error updating stock: ${error.message}`);
-        return null;
+  
+        // Hide the loader once the products are loaded
+        loader.style.display = 'none';
+  
+      } catch (error) {
+        console.error(error.message);
+        alert('Failed to load products.');
+        loader.style.display = 'none'; // Hide loader on error
+      }
     }
-}
-
-async function addToCart(id, name, image, MRP, rate, category, available_jar) {
-    const quantity = parseInt(document.getElementById(`qty-${id}`).value);
-
-    if (quantity > available_jar) {
-        alert('No jar available.');
+  
+    // Load last selected category after refresh
+    document.addEventListener("DOMContentLoaded", () => {
+      const lastCategory = localStorage.getItem("selectedCategory");
+      if (lastCategory) {
+        loadCategory(lastCategory);
+      }
+    });
+  
+    // Cart logic
+    async function addToCart(id, name, image, MRP, rate, category, available_jar) {
+      const quantity = parseInt(document.getElementById(`qty-${id}`).value);
+  
+      // If the item is out of stock, show an alert and stop
+      if (available_jar === 0) {
+        alert('This item is out of stock.');
         return;
+      }
+  
+      // Validate if requested quantity exceeds stock
+      if (quantity > available_jar) {
+        alert('Requested quantity exceeds stock.');
+        return;
+      }
+  
+      try {
+        // 🔥 NEW: Update stock on server before adding to cart
+        const response = await fetch(`http://localhost:3001/api/order/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ qty: quantity })
+        });
+  
+        // Check if the response is successful (status code 200)
+        if (!response.ok) {
+          // Log the error response text
+          const errorText = await response.text();
+          console.error('Error response:', errorText);
+          throw new Error('Failed to update stock: ' + errorText);
+        }
+  
+        // Parse the JSON response
+        const responseData = await response.json();
+        console.log('API response data:', responseData);
+  
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const existingItemIndex = cart.findIndex(item => item.id === id);
+  
+        if (existingItemIndex !== -1) {
+          cart[existingItemIndex].quantity = parseInt(cart[existingItemIndex].quantity) + quantity;
+        } else {
+          const product = { id, name, image, MRP, rate, quantity };
+          cart.push(product);
+        }
+  
+        // Update cart in localStorage
+        localStorage.setItem('cart', JSON.stringify(cart));
+  
+        // Log success and notify the user
+        console.log(`${name} added to cart!`);
+        alert(`${name} added to cart!`);
+  
+        // Optionally: Update the product stock quantity visually
+        const productCard = document.getElementById(`add-to-cart-${id}`).closest('.product-card');
+        const availableQtyElement = productCard.querySelector('.product-details p span');
+        const updatedAvailableQty = available_jar - quantity;
+  
+        // Update available stock display in the UI
+        availableQtyElement.textContent = updatedAvailableQty;
+        availableQtyElement.style.color = updatedAvailableQty === 0 ? 'red' : 'green';
+  
+        // Disable button if stock runs out
+        if (updatedAvailableQty === 0) {
+          const addToCartButton = productCard.querySelector('button');
+          addToCartButton.disabled = true;
+          addToCartButton.textContent = 'Out of Stock';
+        }
+  
+        // **Page refresh after adding to cart**
+        setTimeout(() => {
+          location.reload(); // Refresh the page after adding to cart
+        }, 300); // Short delay before refresh for smoother user experience
+  
+      } catch (err) {
+        // Log the error for debugging
+        console.error('Error updating stock:', err);
+        alert('Error updating stock: ' + err.message);
+      }
     }
-
-    const updatedStock = await updateStock(id, quantity); // Update backend stock
-    if (updatedStock === null) return;
-
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    const existingItemIndex = cart.findIndex(item => item.id === id);
-
-    if (existingItemIndex !== -1) {
-        cart[existingItemIndex].quantity += quantity;
-    } else {
-        cart.push({ id, name, image, MRP, rate, quantity });
-    }
-
-    localStorage.setItem('cart', JSON.stringify(cart));
-    
-    alert(`${name} added to cart!`);
-    location.reload(); // Refresh page to reflect stock updates
-}
-
   </script>
+  
+
 </body>
 </html>
 
@@ -402,6 +409,7 @@ async function addToCart(id, name, image, MRP, rate, category, available_jar) {
 
 
 
+order page ka code hain
 
 
 
@@ -411,145 +419,504 @@ async function addToCart(id, name, image, MRP, rate, category, available_jar) {
 
 
 
-//jaruri work code 
-<script>
-  async function loadCategory(category) {
-    try {
-      localStorage.setItem("selectedCategory", category); // Store selected category
-      const container = document.getElementById('products');
-      const loader = document.getElementById('loader');
-      
-      // Show loader while fetching products
-      loader.style.display = 'block';
-      container.innerHTML = ''; // Clear previous products if any
 
-      const apiUrl = `http://localhost:3001/${category}/api`; // API call for products
-      const res = await fetch(apiUrl);
-      if (!res.ok) throw new Error('Failed to fetch products.');
 
-      const items = await res.json();
-      container.innerHTML = `<h2 style="color:#003087;">${category.charAt(0).toUpperCase() + category.slice(1)} Products</h2>`;
-      
-      items.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'product-card';
-        card.innerHTML = `
-          <img src="${item.image}" alt="${item.name}">
-          <div class="product-details">
-            <h3>${item.name}</h3>
-            <span style="color: red;">MRP ₹${item.MRP}</span><br>
-            <span style="color: green;"><strong>Rate:</strong> ₹${item.rate}</span><br>
-            <p>Total Weight: ${item.total_weight}</p>
-            ${item.available_jar > 0
-              ? `<p><strong>Available:</strong> <span style="color: green;">${item.available_jar}</span></p>`
-              : `<p style="color: red;">Out of Stock</p>`}
-            <div class="actions">
-              <input type="number" id="qty-${item._id}" min="1" max="${item.available_jar}" value="1" ${item.available_jar === 0 ? 'disabled' : ''}>
-              <button id="add-to-cart-${item._id}" onclick="addToCart('${item._id}', '${item.name}', '${item.image}', ${item.MRP}, ${item.rate}, '${category}', ${item.available_jar})" 
-                ${item.available_jar === 0 ? 'class="out-of-stock" disabled' : ''}>
-                ${item.available_jar === 0 ? 'Out of Stock' : 'Add to Cart'}
-              </button>
-            </div>
-          </div>
-        `;
-        container.appendChild(card);
-      });
 
-      // Hide the loader once the products are loaded
-      loader.style.display = 'none';
 
-    } catch (error) {
-      console.error(error.message);
-      alert('Failed to load products.');
-      loader.style.display = 'none'; // Hide loader on error
-    }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cart</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; background: #f5f8f4; padding: 2rem; }
+    h1 { text-align: center; color: #003087; margin-bottom: 1.5rem; }
+    .cart-container { max-width: 800px; margin: auto; }
+    .cart-item { display: flex; background: white; padding: 1rem; border-radius: 12px; margin-bottom: 1rem; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); align-items: center; }
+    .cart-item img { width: 80px; border-radius: 8px; margin-right: 1rem; }
+    .cart-actions { display: flex; flex-direction: column; gap: 0.5rem; }
+    .remove-btn, .order-btn { background: #003087; color: white; padding: 1rem; border-radius: 8px; cursor: pointer; width: 100%; font-size: 1rem; margin-top: 1rem; }
+    .remove-btn:hover, .order-btn:hover { background: #001f5c; }
+    #order-summary { display: none; background: rgba(0, 0, 0, 0.5); position: fixed; top: 0; left: 0; width: 100%; height: 100%; justify-content: center; align-items: center; }
+    .order-popup { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); text-align: center; width: 400px; }
+    .close-btn { background: #e53935; color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Your Cart</h1>
+  <p>Welcome, <%= user %>!</p>
+
+  <div id="shop-info"></div>
+  <div class="cart-container" id="cart-items"></div>
+  <h3>Total Price: ₹<span id="total-price">0</span></h3>
+  <button class="order-btn" onclick="openOrderPopup()">Order All</button>
+
+  <div id="order-summary">
+    <div class="order-popup">
+      <h2>Order Summary</h2>
+      <form id="order-form" action="/confirm-order" method="POST">
+        <h3>Shop Details</h3>
+        <p>Shop Name: <span id="shop-name"></span></p>
+        <p>Contact: <span id="shop-contact"></span></p>
+        <p>Location: <span id="shop-location"></span></p>
+        <p>Address: <span id="shop-address"></span></p>
+
+        <h3>User Details</h3>
+        <label>Your Name:</label>
+        <input type="text" value="<%= user %>" readonly><br><br>
+
+        <label for="user-contact">Your Contact:</label>
+        <input type="text" id="user-contact" required><br><br>
+
+        <h3>Order Items</h3>
+        <div id="order-items"></div>
+
+        <h3>Total Price: ₹<span id="order-total-price">0</span></h3>
+
+        <input type="hidden" name="userName" id="hidden-user-name">
+        <input type="hidden" name="userContact" id="hidden-user-contact">
+        <input type="hidden" name="shopName" id="hidden-shop-name">
+        <input type="hidden" name="shopContact" id="hidden-shop-contact">
+        <input type="hidden" name="orderDate" id="order-date">
+        <input type="hidden" name="totalPrice" id="hidden-total-price">
+        <input type="hidden" name="orderItems" id="hidden-order-items">
+
+        <button type="submit" class="close-btn">Confirm Order</button>
+        <button type="button" class="close-btn" onclick="closeOrderPopup()">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function loadCart() {
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const shopDetails = JSON.parse(localStorage.getItem('shopDetails')) || {};
+
+  const container = document.getElementById('cart-items');
+  const shopContainer = document.getElementById('shop-info');
+  let totalPrice = 0;
+
+  // Display the shop details
+  if (shopDetails.shopName) {
+    shopContainer.innerHTML = `
+      <h2>Shop: ${shopDetails.shopName}</h2>
+      <p>Contact: ${shopDetails.contact}</p>
+      <p>Owner: ${shopDetails.owner}</p>
+      <p>Location: ${shopDetails.location}</p>
+      <p>Address: ${shopDetails.address}</p>
+    `;
+  } else {
+    shopContainer.innerHTML = "<p>No shop selected.</p>";
   }
 
-  // Load last selected category after refresh
-  document.addEventListener("DOMContentLoaded", () => {
-    const lastCategory = localStorage.getItem("selectedCategory");
-    if (lastCategory) {
-      loadCategory(lastCategory);
-    }
+  // Cart items
+  container.innerHTML = cart.length === 0 ? "<p>Your cart is empty.</p>" : "";
+
+  cart.forEach((item, index) => {
+    totalPrice += item.rate * item.quantity;
+    const div = document.createElement('div');
+    div.className = "cart-item";
+    div.innerHTML = `
+      <img src="${item.image}" alt="${item.name}">
+      <div class="cart-details">
+        <h3>${item.name}</h3>
+        <p>MRP: ₹${item.MRP}</p>
+        <p>Rate: ₹${item.rate}</p>
+        <p>Quantity: ${item.quantity}</p>
+      </div>
+      <div class="cart-actions">
+        <button class="remove-btn" onclick="removeItem(${index})">Remove</button>
+      </div>`;
+    container.appendChild(div);
   });
 
-  // Cart logic
-  async function addToCart(id, name, image, MRP, rate, category, available_jar) {
-  const quantity = parseInt(document.getElementById(`qty-${id}`).value);
-
-  // If the item is out of stock, show an alert and stop
-  if (available_jar === 0) {
-    alert('This item is out of stock.');
-    return;
-  }
-
-  // Validate if requested quantity exceeds stock
-  if (quantity > available_jar) {
-    alert('Requested quantity exceeds stock.');
-    return;
-  }
-
-  try {
-    // 🔥 NEW: Update stock on server before adding to cart
-    const response = await fetch(`http://localhost:3001/api/order/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ qty: quantity })
-    });
-
-    // Check if the response is successful (status code 200)
-    if (!response.ok) {
-      // Log the error response text
-      const errorText = await response.text();
-      console.error('Error response:', errorText);
-      throw new Error('Failed to update stock: ' + errorText);
-    }
-
-    // Parse the JSON response
-    const responseData = await response.json();
-    console.log('API response data:', responseData);
-
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    const existingItemIndex = cart.findIndex(item => item.id === id);
-
-    if (existingItemIndex !== -1) {
-      cart[existingItemIndex].quantity = parseInt(cart[existingItemIndex].quantity) + quantity;
-    } else {
-      const product = { id, name, image, MRP, rate, quantity };
-      cart.push(product);
-    }
-
-    // Update cart in localStorage
-    localStorage.setItem('cart', JSON.stringify(cart));
-
-    // Log success and notify the user
-    console.log(`${name} added to cart!`);
-    alert(`${name} added to cart!`);
-
-    // Optionally: Update the product stock quantity visually
-    const productCard = document.getElementById(`add-to-cart-${id}`).closest('.product-card');
-    const availableQtyElement = productCard.querySelector('.product-details p span');
-    const updatedAvailableQty = available_jar - quantity;
-
-    // Update available stock display in the UI
-    availableQtyElement.textContent = updatedAvailableQty;
-    availableQtyElement.style.color = updatedAvailableQty === 0 ? 'red' : 'green';
-
-    // Disable button if stock runs out
-    if (updatedAvailableQty === 0) {
-      const addToCartButton = productCard.querySelector('button');
-      addToCartButton.disabled = true;
-      addToCartButton.textContent = 'Out of Stock';
-    }
-
-  } catch (err) {
-    // Log the error for debugging
-    console.error('Error updating stock:', err);
-    alert('Error updating stock: ' + err.message);
-  }
+  document.getElementById("total-price").textContent = totalPrice;
 }
 
-</script>
+// Order popup for shop details autofill
+function openOrderPopup() {
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const shopDetails = JSON.parse(localStorage.getItem('shopDetails')) || {};
 
+  if (cart.length === 0) {
+    alert("Cart is empty!");
+    return;
+  }
+
+  document.getElementById("shop-name").textContent = shopDetails.shopName;
+  document.getElementById("shop-contact").textContent = shopDetails.contact;
+  document.getElementById("shop-location").textContent = shopDetails.location;
+  document.getElementById("shop-address").textContent = shopDetails.address;
+  document.getElementById("hidden-shop-name").value = shopDetails.shopName;
+  document.getElementById("hidden-shop-contact").value = shopDetails.contact;
+
+  let orderItemsHTML = "";
+  let totalPrice = 0;
+  cart.forEach(item => {
+    orderItemsHTML += `<p>${item.name} - ₹${item.rate} x ${item.quantity} = ₹${item.rate * item.quantity}</p>`;
+    totalPrice += item.rate * item.quantity;
+  });
+
+  document.getElementById("order-items").innerHTML = orderItemsHTML;
+  document.getElementById("order-total-price").textContent = totalPrice;
+
+  document.getElementById("hidden-user-name").value = "<%= user %>"; // You can also dynamically populate the user name here
+  document.getElementById("hidden-total-price").value = totalPrice;
+  document.getElementById("order-date").value = new Date().toISOString().split("T")[0];
+  document.getElementById("hidden-order-items").value = JSON.stringify(cart);
+
+  document.getElementById("order-summary").style.display = "flex";
+}
+
+function closeOrderPopup() {
+  document.getElementById("order-summary").style.display = "none";
+}
+
+
+    function removeItem(index) {
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      cart.splice(index, 1);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      loadCart();
+    }
+
+    function openOrderPopup() {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const shopDetails = JSON.parse(localStorage.getItem('shopDetails')) || {};
+
+      if (cart.length === 0) {
+        alert("Cart is empty!");
+        return;
+      }
+
+      document.getElementById("shop-name").textContent = shopDetails.shopName;
+      document.getElementById("shop-contact").textContent = shopDetails.contact;
+      document.getElementById("shop-location").textContent = shopDetails.location;
+      document.getElementById("shop-address").textContent = shopDetails.address;
+      document.getElementById("hidden-shop-name").value = shopDetails.shopName;
+      document.getElementById("hidden-shop-contact").value = shopDetails.contact;
+
+      let orderItemsHTML = "";
+      let totalPrice = 0;
+      cart.forEach(item => {
+        orderItemsHTML += `<p>${item.name} - ₹${item.rate} x ${item.quantity} = ₹${item.rate * item.quantity}</p>`;
+        totalPrice += item.rate * item.quantity;
+      });
+
+      document.getElementById("order-items").innerHTML = orderItemsHTML;
+      document.getElementById("order-total-price").textContent = totalPrice;
+
+      document.getElementById("hidden-user-name").value = "<%= user %>";
+      document.getElementById("hidden-total-price").value = totalPrice;
+      document.getElementById("order-date").value = new Date().toISOString().split("T")[0];
+      document.getElementById("hidden-order-items").value = JSON.stringify(cart);
+
+      document.getElementById("order-summary").style.display = "flex";
+    }
+
+    function closeOrderPopup() {
+      document.getElementById("order-summary").style.display = "none";
+    }
+
+    // ✅ Intercept the form submission to make AJAX request
+    document.getElementById("order-form").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const userContact = document.getElementById("user-contact").value;
+      if (!userContact.trim()) {
+        alert("Please enter your contact number.");
+        return;
+      }
+
+      document.getElementById("hidden-user-contact").value = userContact;
+
+      const formData = new FormData(this);
+      const data = Object.fromEntries(formData.entries());
+
+      try {
+        const response = await fetch('/confirm-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          alert("✅ Order Placed Successfully!");
+          localStorage.removeItem('cart');
+          localStorage.removeItem('shopDetails');
+          setTimeout(() => window.location.reload(), 500);
+        } else {
+          alert("❌ Failed: " + result.message);
+        }
+      } catch (err) {
+        alert("❌ Server error. Please try again.");
+        console.error(err);
+      }
+    });
+
+    loadCart();
+  </script>
+</body>
+</html>
+  cart ka code
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cart</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; background: #f5f8f4; padding: 2rem; }
+    h1 { text-align: center; color: #003087; margin-bottom: 1.5rem; }
+    .cart-container { max-width: 800px; margin: auto; }
+    .cart-item { display: flex; background: white; padding: 1rem; border-radius: 12px; margin-bottom: 1rem; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); align-items: center; }
+    .cart-item img { width: 80px; border-radius: 8px; margin-right: 1rem; }
+    .cart-actions { display: flex; flex-direction: column; gap: 0.5rem; }
+    .remove-btn, .order-btn { background: #003087; color: white; padding: 1rem; border-radius: 8px; cursor: pointer; width: 100%; font-size: 1rem; margin-top: 1rem; }
+    .remove-btn:hover, .order-btn:hover { background: #001f5c; }
+    #order-summary { display: none; background: rgba(0, 0, 0, 0.5); position: fixed; top: 0; left: 0; width: 100%; height: 100%; justify-content: center; align-items: center; }
+    .order-popup { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); text-align: center; width: 400px; }
+    .close-btn { background: #e53935; color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Your Cart</h1>
+  <p>Welcome, <%= user %>!</p>
+
+  <div id="shop-info"></div>
+  <div class="cart-container" id="cart-items"></div>
+  <h3>Total Price: ₹<span id="total-price">0</span></h3>
+  <button class="order-btn" onclick="openOrderPopup()">Order All</button>
+
+  <div id="order-summary">
+    <div class="order-popup">
+      <h2>Order Summary</h2>
+      <form id="order-form" action="/confirm-order" method="POST">
+        <h3>Shop Details</h3>
+        <p>Shop Name: <span id="shop-name"></span></p>
+        <p>Contact: <span id="shop-contact"></span></p>
+        <p>Location: <span id="shop-location"></span></p>
+        <p>Address: <span id="shop-address"></span></p>
+
+        <h3>User Details</h3>
+        <label>Your Name:</label>
+        <input type="text" value="<%= user %>" readonly><br><br>
+
+        <label for="user-contact">Your Contact:</label>
+        <input type="text" id="user-contact" required><br><br>
+
+        <h3>Order Items</h3>
+        <div id="order-items"></div>
+
+        <h3>Total Price: ₹<span id="order-total-price">0</span></h3>
+
+        <input type="hidden" name="userName" id="hidden-user-name">
+        <input type="hidden" name="userContact" id="hidden-user-contact">
+        <input type="hidden" name="shopName" id="hidden-shop-name">
+        <input type="hidden" name="shopContact" id="hidden-shop-contact">
+        <input type="hidden" name="orderDate" id="order-date">
+        <input type="hidden" name="totalPrice" id="hidden-total-price">
+        <input type="hidden" name="orderItems" id="hidden-order-items">
+
+        <button type="submit" class="close-btn">Confirm Order</button>
+        <button type="button" class="close-btn" onclick="closeOrderPopup()">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function loadCart() {
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const shopDetails = JSON.parse(localStorage.getItem('shopDetails')) || {};
+
+  const container = document.getElementById('cart-items');
+  const shopContainer = document.getElementById('shop-info');
+  let totalPrice = 0;
+
+  // Display the shop details
+  if (shopDetails.shopName) {
+    shopContainer.innerHTML = `
+      <h2>Shop: ${shopDetails.shopName}</h2>
+      <p>Contact: ${shopDetails.contact}</p>
+      <p>Owner: ${shopDetails.owner}</p>
+      <p>Location: ${shopDetails.location}</p>
+      <p>Address: ${shopDetails.address}</p>
+    `;
+  } else {
+    shopContainer.innerHTML = "<p>No shop selected.</p>";
+  }
+
+  // Cart items
+  container.innerHTML = cart.length === 0 ? "<p>Your cart is empty.</p>" : "";
+
+  cart.forEach((item, index) => {
+    totalPrice += item.rate * item.quantity;
+    const div = document.createElement('div');
+    div.className = "cart-item";
+    div.innerHTML = `
+      <img src="${item.image}" alt="${item.name}">
+      <div class="cart-details">
+        <h3>${item.name}</h3>
+        <p>MRP: ₹${item.MRP}</p>
+        <p>Rate: ₹${item.rate}</p>
+        <p>Quantity: ${item.quantity}</p>
+      </div>
+      <div class="cart-actions">
+        <button class="remove-btn" onclick="removeItem(${index})">Remove</button>
+      </div>`;
+    container.appendChild(div);
+  });
+
+  document.getElementById("total-price").textContent = totalPrice;
+}
+
+// Order popup for shop details autofill
+function openOrderPopup() {
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const shopDetails = JSON.parse(localStorage.getItem('shopDetails')) || {};
+
+  if (cart.length === 0) {
+    alert("Cart is empty!");
+    return;
+  }
+
+  document.getElementById("shop-name").textContent = shopDetails.shopName;
+  document.getElementById("shop-contact").textContent = shopDetails.contact;
+  document.getElementById("shop-location").textContent = shopDetails.location;
+  document.getElementById("shop-address").textContent = shopDetails.address;
+  document.getElementById("hidden-shop-name").value = shopDetails.shopName;
+  document.getElementById("hidden-shop-contact").value = shopDetails.contact;
+
+  let orderItemsHTML = "";
+  let totalPrice = 0;
+  cart.forEach(item => {
+    orderItemsHTML += `<p>${item.name} - ₹${item.rate} x ${item.quantity} = ₹${item.rate * item.quantity}</p>`;
+    totalPrice += item.rate * item.quantity;
+  });
+
+  document.getElementById("order-items").innerHTML = orderItemsHTML;
+  document.getElementById("order-total-price").textContent = totalPrice;
+
+  document.getElementById("hidden-user-name").value = "<%= user %>"; // You can also dynamically populate the user name here
+  document.getElementById("hidden-total-price").value = totalPrice;
+  document.getElementById("order-date").value = new Date().toISOString().split("T")[0];
+  document.getElementById("hidden-order-items").value = JSON.stringify(cart);
+
+  document.getElementById("order-summary").style.display = "flex";
+}
+
+function closeOrderPopup() {
+  document.getElementById("order-summary").style.display = "none";
+}
+
+
+    function removeItem(index) {
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      cart.splice(index, 1);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      loadCart();
+    }
+
+    function openOrderPopup() {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const shopDetails = JSON.parse(localStorage.getItem('shopDetails')) || {};
+
+      if (cart.length === 0) {
+        alert("Cart is empty!");
+        return;
+      }
+
+      document.getElementById("shop-name").textContent = shopDetails.shopName;
+      document.getElementById("shop-contact").textContent = shopDetails.contact;
+      document.getElementById("shop-location").textContent = shopDetails.location;
+      document.getElementById("shop-address").textContent = shopDetails.address;
+      document.getElementById("hidden-shop-name").value = shopDetails.shopName;
+      document.getElementById("hidden-shop-contact").value = shopDetails.contact;
+
+      let orderItemsHTML = "";
+      let totalPrice = 0;
+      cart.forEach(item => {
+        orderItemsHTML += `<p>${item.name} - ₹${item.rate} x ${item.quantity} = ₹${item.rate * item.quantity}</p>`;
+        totalPrice += item.rate * item.quantity;
+      });
+
+      document.getElementById("order-items").innerHTML = orderItemsHTML;
+      document.getElementById("order-total-price").textContent = totalPrice;
+
+      document.getElementById("hidden-user-name").value = "<%= user %>";
+      document.getElementById("hidden-total-price").value = totalPrice;
+      document.getElementById("order-date").value = new Date().toISOString().split("T")[0];
+      document.getElementById("hidden-order-items").value = JSON.stringify(cart);
+
+      document.getElementById("order-summary").style.display = "flex";
+    }
+
+    function closeOrderPopup() {
+      document.getElementById("order-summary").style.display = "none";
+    }
+
+    // ✅ Intercept the form submission to make AJAX request
+    document.getElementById("order-form").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const userContact = document.getElementById("user-contact").value;
+      if (!userContact.trim()) {
+        alert("Please enter your contact number.");
+        return;
+      }
+
+      document.getElementById("hidden-user-contact").value = userContact;
+
+      const formData = new FormData(this);
+      const data = Object.fromEntries(formData.entries());
+
+      try {
+        const response = await fetch('/confirm-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          alert("✅ Order Placed Successfully!");
+          localStorage.removeItem('cart');
+          localStorage.removeItem('shopDetails');
+          setTimeout(() => window.location.reload(), 500);
+        } else {
+          alert("❌ Failed: " + result.message);
+        }
+      } catch (err) {
+        alert("❌ Server error. Please try again.");
+        console.error(err);
+      }
+    });
+
+    loadCart();
+  </script>
 </body>
 </html>

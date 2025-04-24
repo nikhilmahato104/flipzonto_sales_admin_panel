@@ -52,4 +52,33 @@ regions.forEach(region => {
   });
 });
 
+
+
+
+
+
+//frontend new react sales panel for fetch all shop
+// New API route to get shops as JSON (not rendered view)
+// New API route to get shops as JSON
+// Remove the ensureAuth middleware to make this route public
+router.get('/api/shops/:region', async (req, res) => {
+  const region = req.params.region;
+
+  if (!regions.includes(region)) {
+    return res.status(400).json({ error: 'Invalid region' });
+  }
+
+  try {
+    const shops = await Shop.find({ region });
+    res.json({ shops });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+
+
+
+
 module.exports = router;
