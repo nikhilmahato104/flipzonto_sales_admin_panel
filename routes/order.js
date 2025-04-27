@@ -11,11 +11,11 @@ router.get('/order-:shopName&:contact', async (req, res) => {
 
   try {
     const shop = await Shop.findOne({ shopName, contact });
-
+  
     if (!shop) {
       return res.status(404).send('Shop not found');
     }
-
+  
     res.render('orderPage', { shopDetails: shop });
   } catch (error) {
     console.error('Error fetching shop info:', error);
