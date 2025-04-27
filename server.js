@@ -102,7 +102,8 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
   'https://your-production-domain.com',
-  'https://sales-manpanel-react-darkhower.netlify.app'
+  'https://sales-manpanel-react-darkhower.netlify.app',
+  'https://fzt-api-frilu457.onrender.com',
 ];
 
 app.use(cors({
